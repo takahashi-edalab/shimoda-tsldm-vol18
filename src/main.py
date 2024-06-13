@@ -20,6 +20,22 @@ def get_args():
     parser.add_argument(
         "--gap_interval", "-i", type=float, default=10, help="gap interval"
     )
+    parser.add_argument(
+        "--gap_order",
+        "-o",
+        type=str,
+        default="ca-unitnet",
+        choices=[
+            "cf-allnet",
+            "ca-allnet",
+            "cf-unitnet",
+            "ca-unitnet",
+            "random",
+            "bottom-up",
+            "top-down",
+        ],
+        help="gap order",
+    )
     args = parser.parse_args()
     return args
 

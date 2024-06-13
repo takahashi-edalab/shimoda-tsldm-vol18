@@ -251,8 +251,6 @@ def ccap(org_netlist: list, args, n_gaps: int):
         else:
             congestion_use_allnet = False
 
-        print(f"Congestion first: {congestion_first}")
-        print(f"Congestion use allnet: {congestion_use_allnet}")
     elif args.gap_order == "random":
         import random
 
