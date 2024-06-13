@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "shimoda-tsldm-vol18"
+version = "0.1.0"
+description = ""
+authors = ["shimoshida <moshimoshimoshida@gmail.com>"]
+readme = "README.md"
+packages = [{include = "shimoda_tsldm_vol18"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
