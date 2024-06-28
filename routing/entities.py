@@ -108,7 +108,6 @@ class Net:
 
         ans = 0
         for p in self.pins:
-            # ans += abs(p.y - given_midy) - self.width / 2  # for isocc
             ans += abs(p.y - given_midy)
         return ans
 
