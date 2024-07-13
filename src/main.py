@@ -110,10 +110,19 @@ def main():
     chip_height = (n_gaps + 1) * args.gap_interval + n_gaps * args.gap_width
     netlist = generate_netlist(args, chip_height)
     # run by each algorithm
+
     le_gaps = algos.left_edge(netlist, args)
     le_vwl = calc_vertical_wirelength(le_gaps)
+
+    le_cgo_gaps = algos.left_edge(netlist, args, n_gaps)
+    le_cgo_vwl = calc_vertical_wirelength(le_cgo_gaps)
+
     cap_gaps = algos.cap(netlist, args)
     cap_vwl = calc_vertical_wirelength(cap_gaps)
+
+    cap_cgo_gaps = algos.cap(netlist, args, n_gaps)
+    cap_cgo_vwl = calc_vertical_wirelength(cap_cgo_gaps)
+
     ccap_gaps = algos.ccap(netlist, args, n_gaps)
     ccap_vwl = calc_vertical_wirelength(ccap_gaps)
     # results ...
@@ -127,25 +136,42 @@ def main():
     print(f"  - hwl/Ch/|N_in|: {netlist.horizontal_wirelength() / 1 / args.n_nets:.2f}")
     print(f"  - vertival   wl: {netlist.vertical_wirelength():.1f}")
     lb_vwl_per_pin = netlist.vertical_wirelength() / chip_height / netlist.n_pins()
+
     print(f"  - vwl/Cv/|P_in|: {lb_vwl_per_pin:.4f}")
     print("Left Edge")
     print(f"  - #gaps used : {len(le_gaps)}")
     print(f"  - vertival wl: {le_vwl:.1f}")
     le_vwl_per_pin = le_vwl / chip_height / netlist.n_pins()
     print(f"  - vwl/Cv/|P_in|: {le_vwl_per_pin:.4f}")
-    print(f"  - rate[%]      : {le_vwl_per_pin / lb_vwl_per_pin * 100:.0f}")
+    print(f"  - rate[%]      : {le_vwl_per_pin / lb_vwl_per_pin * 100:.1f}")
+
+    print("Left Edge with CGO")
+    print(f"  - #gaps used : {len(le_cgo_gaps)}")
+    print(f"  - vertival wl: {le_cgo_vwl:.1f}")
+    le_cgo_vwl_per_pin = le_cgo_vwl / chip_height / netlist.n_pins()
+    print(f"  - vwl/Cv/|P_in|: {le_cgo_vwl_per_pin:.4f}")
+    print(f"  - rate[%]      : {le_cgo_vwl_per_pin / lb_vwl_per_pin * 100:.1f}")
+
     print("CAP")
     print(f"  - #gaps used : {len(cap_gaps)}")
     print(f"  - vertival wl: {cap_vwl:.1f}")
     cap_vwl_per_pin = cap_vwl / chip_height / netlist.n_pins()
     print(f"  - vwl/Cv/|P_in|: {cap_vwl_per_pin:.4f}")
-    print(f"  - rate[%]      : {cap_vwl_per_pin / lb_vwl_per_pin * 100:.0f}")
+    print(f"  - rate[%]      : {cap_vwl_per_pin / lb_vwl_per_pin * 100:.1f}")
+
+    print("CAP with CGO")
+    print(f"  - #gaps used : {len(cap_cgo_gaps)}")
+    print(f"  - vertival wl: {cap_cgo_vwl:.1f}")
+    cap_cgo_vwl_per_pin = cap_cgo_vwl / chip_height / netlist.n_pins()
+    print(f"  - vwl/Cv/|P_in|: {cap_cgo_vwl_per_pin:.4f}")
+    print(f"  - rate[%]      : {cap_cgo_vwl_per_pin / lb_vwl_per_pin * 100:.1f}")
+
     print("CCAP")
     print(f"  - #gaps used : {len(ccap_gaps)}")
     print(f"  - vertival wl: {ccap_vwl:.1f}")
     ccap_vwl_per_pin = ccap_vwl / chip_height / netlist.n_pins()
     print(f"  - vwl/Cv/|P_in|: {ccap_vwl_per_pin:.4f}")
-    print(f"  - rate[%]      : {ccap_vwl_per_pin / lb_vwl_per_pin * 100:.0f}")
+    print(f"  - rate[%]      : {ccap_vwl_per_pin / lb_vwl_per_pin * 100:.1f}")
 
 
 if __name__ == "__main__":

@@ -3,16 +3,35 @@ from routing import entities
 import numpy as np
 
 
-def left_edge(netlist: list, args):
-    n_gaps = 0
+def left_edge(netlist: list, args, n_gaps: int = None):
+
     gaps = []
+    if not n_gaps is None:
+        for i in range(n_gaps):
+            gap_bottom = (i + 1) * args.gap_interval + i * args.gap_width
+            gap = entities.Gap(netlist, width=args.gap_width, base_height=gap_bottom)
+            gaps.append(gap)
+
     # left edge
+    gap_count = 0
     sorted_netlist = sorted(netlist, key=lambda x: x.minx)
+    assigned_gaps = []
     while sorted_netlist:
-        gap_bottom = (n_gaps + 1) * args.gap_interval + n_gaps * args.gap_width
-        gap = entities.Gap(sorted_netlist, width=args.gap_width, base_height=gap_bottom)
-        gaps.append(gap)
-        n_gaps += 1
+        if n_gaps is None:
+            gap_bottom = (
+                gap_count + 1
+            ) * args.gap_interval + gap_count * args.gap_width
+            gap = entities.Gap(
+                sorted_netlist, width=args.gap_width, base_height=gap_bottom
+            )
+            assigned_gaps.append(gap)
+            gap_count += 1
+        else:
+            unit_width_nets = [n for n in sorted_netlist if n.width == 1]
+            calc_gap_congestion(gaps, unit_width_nets)
+            gaps = sorted(gaps, reverse=False, key=lambda x: x.congestion)
+            gap = gaps.pop(0)
+            assigned_gaps.append(gap)
 
         while True:
             x = Decimal(float("-inf"))
@@ -30,7 +49,7 @@ def left_edge(netlist: list, args):
             for n in remove_nets:
                 sorted_netlist.remove(n)
 
-    return gaps
+    return assigned_gaps
 
 
 def __cap_priority(net1: entities.Net, net2: entities.Net) -> int:
@@ -57,7 +76,7 @@ def is_desired_net(
     return True
 
 
-def cap(netlist: list, args) -> list:
+def cap(netlist: list, args, n_gaps: int = None) -> list:
     from copy import deepcopy
     from collections import deque
     from functools import cmp_to_key
@@ -65,14 +84,33 @@ def cap(netlist: list, args) -> list:
     sorted_netlist = deepcopy(netlist)
     sorted_netlist.sort(key=cmp_to_key(__cap_priority))
 
-    n_gaps = 0
     gaps = []
+    if not n_gaps is None:
+        for i in range(n_gaps):
+            gap_bottom = (i + 1) * args.gap_interval + i * args.gap_width
+            gap = entities.Gap(netlist, width=args.gap_width, base_height=gap_bottom)
+            gaps.append(gap)
+
+    gap_count = 0
+    assigned_gaps = []
     height_limit_queue = deque()
     while sorted_netlist:
-        gap_bottom = (n_gaps + 1) * args.gap_interval + n_gaps * args.gap_width
-        gap = entities.Gap(sorted_netlist, width=args.gap_width, base_height=gap_bottom)
-        gaps.append(gap)
-        n_gaps += 1
+        if n_gaps is None:
+            gap_bottom = (
+                gap_count + 1
+            ) * args.gap_interval + gap_count * args.gap_width
+            gap = entities.Gap(
+                sorted_netlist, width=args.gap_width, base_height=gap_bottom
+            )
+            assigned_gaps.append(gap)
+            gap_count += 1
+        else:
+            unit_width_nets = [n for n in sorted_netlist if n.width == 1]
+            calc_gap_congestion(gaps, unit_width_nets)
+            gaps = sorted(gaps, reverse=False, key=lambda x: x.congestion)
+            gap = gaps.pop(0)
+            assigned_gaps.append(gap)
+
         while True:
             # height limit
             if len(height_limit_queue) == 0:
@@ -124,7 +162,7 @@ def cap(netlist: list, args) -> list:
             # delte nets
             for n in assign_nets:
                 sorted_netlist.remove(n)
-    return gaps
+    return assigned_gaps
 
 
 def calc_gap_congestion(gaps: list, netlist: list):
