@@ -9,6 +9,8 @@ packages = [{include = "shimoda_tsldm_vol18"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 numpy = "^1.26.4"
+matplotlib = "^3.9.2"
+ipykernel = "^6.29.5"
 
 
 [build-system]
