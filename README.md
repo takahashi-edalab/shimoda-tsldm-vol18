@@ -39,7 +39,7 @@ Run various gap order in CCAP with the same number of gaps as that of lower boun
 poetry run python -m src.gap_order --seed 0 --n_nets 100 -c 1 -o random 
 ```
 
-There are three kinds of net width probabilities exist as follows:
+There are two kinds of net width probabilities exist as follows:
 
 | c   | w=1  | w=2  | w=3  | w=4  | 
 | --- | ---- | ---- | ---- | ---- | 
